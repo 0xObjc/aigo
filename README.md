@@ -51,19 +51,19 @@ Aigo 的项目结构如下：
 ```
 github.com/0xObjc/aigo
 ├── cmd/
-│   └── main.go
+│   └── main.go          # 主程序入口，负责解析命令行参数并调用相关模块
 ├── internal/
 │   ├── collector/
-│   │   └── collector.go
+│   │   └── collector.go # 文件收集模块，负责遍历目录并收集指定文件
 │   ├── config/
-│   │   └── config.go
+│   │   └── config.go    # 配置模块，负责解析命令行参数并生成配置对象
 │   ├── generator/
-│   │   └── generator.go
+│   │   └── generator.go # 项目结构生成模块，负责生成目录结构的文本表示
 │   ├── model/
-│   │   └── model.go
+│   │   └── model.go     # 数据模型定义，定义了文件对象的结构
 │   └── renderer/
-│       └── renderer.go
-└── go.mod
+│       └── renderer.go  # 模板渲染模块，负责将生成的数据渲染到模板并复制到剪贴板
+└── go.mod               # Go 模块定义文件，定义了项目的依赖关系
 ```
 
 ## 依赖
@@ -72,17 +72,9 @@ Aigo 使用以下外部依赖：
 
 - `github.com/atotto/clipboard`：用于将渲染的模板复制到剪贴板。
 
-## 许可证
-
-本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
-
 ## 贡献
 
 欢迎贡献！请随时提交拉取请求或打开问题以报告任何错误或功能请求。
-
-## 作者
-
-- [0xObjc](https://github.com/0xObjc)
 
 ## 致谢
 
