@@ -23,9 +23,13 @@ type TemplateData struct {
 	Files            []File
 }
 
+type Config struct {
+	IncludeAllFiles bool
+}
+
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: GoProjectStructToClipboard <directory>")
+	if len(os.Args) != 2 && len(os.Args) != 3 {
+		fmt.Println("Usage: GoProjectStructToClipboard <directory> [-all]")
 		return
 	}
 
@@ -35,53 +39,54 @@ func main() {
 		return
 	}
 
-	var projectStructure bytes.Buffer
-	err := generateProjectStructure(dir, &projectStructure, "")
+	config := Config{
+		IncludeAllFiles: len(os.Args) == 3 && os.Args[2] == "-all",
+	}
+
+	// Print all arguments to terminal
+	fmt.Println("Arguments:")
+	for i, arg := range os.Args {
+		fmt.Printf("Arg %d: %s\n", i, arg)
+	}
+
+	projectStructure, err := GenerateProjectStructure(dir, config)
 	if err != nil {
 		fmt.Println("Error generating project structure:", err)
 		return
 	}
 
-	files, err := collectGoFiles(dir)
+	files, err := CollectGoFiles(dir)
 	if err != nil {
 		fmt.Println("Error collecting .go files:", err)
 		return
 	}
 
 	data := TemplateData{
-		ProjectStructure: projectStructure.String(),
+		ProjectStructure: projectStructure,
 		Files:            files,
 	}
 
-	templateBytes, err := ioutil.ReadFile("template.md")
+	// Print project structure to terminal
+	fmt.Println("Project Structure:")
+	fmt.Println(projectStructure)
+
+	// Render template and copy to clipboard
+	err = RenderTemplate(data)
 	if err != nil {
-		fmt.Println("Error reading template file:", err)
+		fmt.Println("Error rendering template:", err)
 		return
 	}
 
-	tmpl, err := template.New("project").Parse(string(templateBytes))
-	if err != nil {
-		fmt.Println("Error parsing template:", err)
-		return
-	}
-
-	var result bytes.Buffer
-	err = tmpl.Execute(&result, data)
-	if err != nil {
-		fmt.Println("Error executing template:", err)
-		return
-	}
-
-	err = clipboard.WriteAll(result.String())
-	if err != nil {
-		fmt.Println("Error writing to clipboard:", err)
-		return
-	}
-
-	fmt.Println("Project structure and .go files copied to clipboard")
+	fmt.Println("Template structure copied to clipboard")
 }
 
-func generateProjectStructure(dir string, buf *bytes.Buffer, prefix string) error {
+func GenerateProjectStructure(dir string, config Config) (string, error) {
+	var buf bytes.Buffer
+	err := generateProjectStructure(dir, &buf, "", config)
+	return buf.String(), err
+}
+
+func generateProjectStructure(dir string, buf *bytes.Buffer, prefix string, config Config) error {
 	entries, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
@@ -109,11 +114,11 @@ func generateProjectStructure(dir string, buf *bytes.Buffer, prefix string) erro
 			if i == len(entries)-1 {
 				newPrefix = prefix + "    "
 			}
-			err := generateProjectStructure(filepath.Join(dir, entry.Name()), buf, newPrefix)
+			err := generateProjectStructure(filepath.Join(dir, entry.Name()), buf, newPrefix, config)
 			if err != nil {
 				return err
 			}
-		} else if strings.HasSuffix(entry.Name(), ".go") {
+		} else if config.IncludeAllFiles || strings.HasSuffix(entry.Name(), ".go") {
 			buf.WriteString("\n")
 		} else {
 			buf.WriteString("\n")
@@ -123,7 +128,7 @@ func generateProjectStructure(dir string, buf *bytes.Buffer, prefix string) erro
 	return nil
 }
 
-func collectGoFiles(dir string) ([]File, error) {
+func CollectGoFiles(dir string) ([]File, error) {
 	var files []File
 
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -152,4 +157,25 @@ func collectGoFiles(dir string) ([]File, error) {
 	})
 
 	return files, err
+}
+
+func RenderTemplate(data TemplateData) error {
+	templateBytes, err := ioutil.ReadFile("template.md")
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("project").Parse(string(templateBytes))
+	if err != nil {
+		return err
+	}
+
+	var result bytes.Buffer
+	err = tmpl.Execute(&result, data)
+	if err != nil {
+		return err
+	}
+
+	err = clipboard.WriteAll(result.String())
+	return err
 }
