@@ -13,8 +13,28 @@ import (
 
 func GenerateProjectStructure(dir string, cfg config.Config) (string, error) {
 	var buf bytes.Buffer
-	err := generateProjectStructure(dir, &buf, "", cfg)
+
+	// Read go.mod to get project name
+	goModPath := filepath.Join(dir, "go.mod")
+	content, err := ioutil.ReadFile(goModPath)
+	if err != nil {
+		return "", err
+	}
+	projectName := extractProjectName(string(content))
+
+	buf.WriteString(projectName + "\n")
+	err = generateProjectStructure(dir, &buf, "", cfg)
 	return buf.String(), err
+}
+
+func extractProjectName(goModContent string) string {
+	lines := strings.Split(goModContent, "\n")
+	for _, line := range lines {
+		if strings.HasPrefix(line, "module ") {
+			return strings.TrimSpace(strings.TrimPrefix(line, "module "))
+		}
+	}
+	return "UnknownProject"
 }
 
 func generateProjectStructure(dir string, buf *bytes.Buffer, prefix string, cfg config.Config) error {
