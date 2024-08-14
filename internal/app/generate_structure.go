@@ -52,11 +52,14 @@ func GenerateProjectStructure(args []string) {
 		Files:            files,
 	}
 
-	err = renderer.RenderTemplate(dir, data)
+	_, tokenCount, err := renderer.RenderTemplate(dir, data)
 	if err != nil {
 		fmt.Println("Error rendering template:", err)
 		return
 	}
 
+	// 仅打印项目结构
+	fmt.Println(projectStructure)
+	fmt.Printf("Estimated token count: %d\n", tokenCount)
 	fmt.Println("Template structure copied to clipboard")
 }
