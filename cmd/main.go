@@ -47,11 +47,18 @@ func main() {
 			fmt.Println("Default template file created successfully")
 		}
 		return
-	case "help":
-		showHelp()
-		return
-	default:
-		dir := command
+	case "w":
+		var dir string
+		if len(os.Args) == 2 {
+			// 如果没有提供目录参数，使用当前工作目录
+			dir, _ = os.Getwd()
+		} else if len(os.Args) == 3 {
+			dir = os.Args[2]
+		} else {
+			showHelp()
+			return
+		}
+
 		cfg := config.NewConfig(os.Args)
 
 		configFile, err := config.LoadConfigFile(dir)
@@ -90,6 +97,11 @@ func main() {
 		}
 
 		fmt.Println("Template structure copied to clipboard")
+	case "help":
+		showHelp()
+		return
+	default:
+		showHelp()
 	}
 }
 
@@ -117,7 +129,7 @@ func showHelp() {
 	fmt.Println("Usage: aigo <command> [options]")
 	fmt.Println("Commands:")
 	fmt.Println("  new [directory]   创建新的配置文件和默认模板文件")
-	fmt.Println("  <directory>       生成指定目录的项目结构并复制到剪贴板")
+	fmt.Println("  w [directory]     生成指定目录的项目结构并复制到剪贴板")
 	fmt.Println("  help              显示帮助信息")
 	fmt.Println("Options:")
 	fmt.Println("  -all              包含所有文件")
