@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"github.com/0xObjc/aigo/internal/model"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"text/template"
 
 	"github.com/atotto/clipboard"
@@ -14,10 +16,23 @@ type TemplateData struct {
 	Files            []model.File
 }
 
-func RenderTemplate(data TemplateData) error {
-	templateBytes, err := ioutil.ReadFile("template.md")
-	if err != nil {
-		return err
+func RenderTemplate(dir string, data TemplateData) error {
+	var templateBytes []byte
+	var err error
+
+	// 检查是否存在自定义模板文件
+	templatePath := filepath.Join(dir, "AigoTemplate.md")
+	if _, err := os.Stat(templatePath); err == nil {
+		templateBytes, err = ioutil.ReadFile(templatePath)
+		if err != nil {
+			return err
+		}
+	} else {
+		// 使用默认模板文件
+		templateBytes, err = ioutil.ReadFile("template.md")
+		if err != nil {
+			return err
+		}
 	}
 
 	tmpl, err := template.New("project").Parse(string(templateBytes))

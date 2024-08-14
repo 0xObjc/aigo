@@ -2,6 +2,9 @@ package config
 
 type Config struct {
 	IncludeAllFiles bool
+	Language        string
+	ExcludeFiles    []string
+	IncludeFiles    []string
 }
 
 func NewConfig(args []string) Config {
@@ -11,5 +14,8 @@ func NewConfig(args []string) Config {
 	}
 	return Config{
 		IncludeAllFiles: includeAllFiles,
+		Language:        "go",
+		ExcludeFiles:    []string{},
+		IncludeFiles:    []string{},
 	}
 }

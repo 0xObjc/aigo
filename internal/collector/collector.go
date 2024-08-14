@@ -22,13 +22,20 @@ func CollectFiles(dir string, cfg config.Config) ([]model.File, error) {
 			return filepath.SkipDir
 		}
 
-		if !info.IsDir() && (cfg.IncludeAllFiles || strings.HasSuffix(info.Name(), ".go") || info.Name() == "go.mod") {
-			content, err := ioutil.ReadFile(path)
-			if err != nil {
-				return err
-			}
+		relPath, err := filepath.Rel(dir, path)
+		if err != nil {
+			return err
+		}
 
-			relPath, err := filepath.Rel(dir, path)
+		if shouldExclude(relPath, cfg.ExcludeFiles) {
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		if shouldInclude(relPath, cfg.IncludeFiles) || (cfg.IncludeAllFiles || strings.HasSuffix(info.Name(), ".go") || info.Name() == "go.mod") {
+			content, err := ioutil.ReadFile(path)
 			if err != nil {
 				return err
 			}
@@ -43,4 +50,22 @@ func CollectFiles(dir string, cfg config.Config) ([]model.File, error) {
 	})
 
 	return files, err
+}
+
+func shouldExclude(path string, excludeFiles []string) bool {
+	for _, exclude := range excludeFiles {
+		if path == exclude {
+			return true
+		}
+	}
+	return false
+}
+
+func shouldInclude(path string, includeFiles []string) bool {
+	for _, include := range includeFiles {
+		if path == include {
+			return true
+		}
+	}
+	return false
 }
