@@ -42,7 +42,7 @@ func CreateConfigFile(dir string) error {
 
 	cfg := ConfigFile{
 		Language:     "go",
-		ExcludeFiles: []string{},
+		ExcludeFiles: []string{"AigoTemplate.md", "aigo.yaml"},
 		IncludeFiles: []string{},
 	}
 
