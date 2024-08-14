@@ -12,7 +12,7 @@ import (
 
 type TemplateData struct {
 	ProjectStructure string
-	Files            []model.File
+	Files            []model.FileWithLanguage // 修改为包含语言信息的文件结构
 }
 
 func RenderTemplate(dir string, data TemplateData) (string, int, error) {

@@ -37,3 +37,13 @@ func (c *Config) ShouldInclude(path string) bool {
 	}
 	return false
 }
+
+var defaultExcludeRules = map[string][]string{
+	"go":     {"AigoTemplate.md", "aigo.yaml"},
+	"python": {"__pycache__", "*.pyc"},
+	// 添加其他语言的默认规则
+}
+
+func GetDefaultExcludeRules(language string) []string {
+	return defaultExcludeRules[language]
+}

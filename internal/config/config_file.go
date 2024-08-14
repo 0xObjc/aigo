@@ -34,15 +34,17 @@ func LoadConfigFile(dir string) (*ConfigFile, error) {
 	return &cfg, nil
 }
 
-func CreateConfigFile(dir string) error {
+func CreateConfigFile(dir string, language string) error {
 	configFilePath := filepath.Join(dir, "aigo.yaml")
 	if _, err := os.Stat(configFilePath); !os.IsNotExist(err) {
 		return fmt.Errorf("config file already exists")
 	}
 
+	excludeFiles := GetDefaultExcludeRules(language)
+
 	cfg := ConfigFile{
-		Language:     "go",
-		ExcludeFiles: []string{"AigoTemplate.md", "aigo.yaml"},
+		Language:     language,
+		ExcludeFiles: excludeFiles,
 		IncludeFiles: []string{},
 	}
 
