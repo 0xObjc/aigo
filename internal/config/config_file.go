@@ -17,7 +17,8 @@ type ConfigFile struct {
 func LoadConfigFile(dir string) (*ConfigFile, error) {
 	configFilePath := filepath.Join(dir, "aigo.yaml")
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
-		return nil, nil
+		// 如果没有找到配置文件，返回一个友好的提示
+		return nil, fmt.Errorf("未找到配置文件。请使用 'aigo new' 创建一个。")
 	}
 
 	content, err := os.ReadFile(configFilePath)
@@ -37,7 +38,7 @@ func LoadConfigFile(dir string) (*ConfigFile, error) {
 func CreateConfigFile(dir string, language string) error {
 	configFilePath := filepath.Join(dir, "aigo.yaml")
 	if _, err := os.Stat(configFilePath); !os.IsNotExist(err) {
-		return fmt.Errorf("config file already exists")
+		return fmt.Errorf("配置文件已存在")
 	}
 
 	excludeFiles := append(GetDefaultExcludeRules(language), "aigo.yaml", "AigoTemplate.md")

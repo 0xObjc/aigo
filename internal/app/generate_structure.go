@@ -25,7 +25,7 @@ func GenerateProjectStructure(args []string) {
 
 	configFile, err := config.LoadConfigFile(dir)
 	if err != nil {
-		fmt.Println("Error loading config file:", err)
+		fmt.Println(err)
 		return
 	}
 
@@ -37,13 +37,13 @@ func GenerateProjectStructure(args []string) {
 
 	projectStructure, err := generator.GenerateProjectStructure(dir, cfg)
 	if err != nil {
-		fmt.Println("Error generating project structure:", err)
+		fmt.Println("错误：生成项目结构失败:", err)
 		return
 	}
 
 	files, err := collector.CollectFiles(dir, cfg)
 	if err != nil {
-		fmt.Println("Error collecting files:", err)
+		fmt.Println("错误：收集文件失败:", err)
 		return
 	}
 
@@ -54,12 +54,12 @@ func GenerateProjectStructure(args []string) {
 
 	_, tokenCount, err := renderer.RenderTemplate(dir, data)
 	if err != nil {
-		fmt.Println("Error rendering template:", err)
+		fmt.Println("错误：渲染模板失败:", err)
 		return
 	}
 
 	// 仅打印项目结构
 	fmt.Println(projectStructure)
-	fmt.Printf("Estimated token count: %d\n", tokenCount)
-	fmt.Println("Template structure copied to clipboard")
+	fmt.Printf("估计的 token 数量: %d\n", tokenCount)
+	fmt.Println("模板结构已复制到剪贴板")
 }
