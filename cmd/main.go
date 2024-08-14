@@ -14,7 +14,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: aigo <directory> [-all]")
+		showHelp()
 		return
 	}
 
@@ -28,7 +28,7 @@ func main() {
 		} else if len(os.Args) == 3 {
 			dir = os.Args[2]
 		} else {
-			fmt.Println("Usage: aigo new [directory]")
+			showHelp()
 			return
 		}
 
@@ -46,6 +46,9 @@ func main() {
 		} else {
 			fmt.Println("Default template file created successfully")
 		}
+		return
+	case "help":
+		showHelp()
 		return
 	default:
 		dir := command
@@ -108,4 +111,14 @@ func createDefaultTemplateFile(dir string) error {
 	// 将默认模板文件内容写入目标目录
 	err = ioutil.WriteFile(targetTemplatePath, content, 0644)
 	return err
+}
+
+func showHelp() {
+	fmt.Println("Usage: aigo <command> [options]")
+	fmt.Println("Commands:")
+	fmt.Println("  new [directory]   创建新的配置文件和默认模板文件")
+	fmt.Println("  <directory>       生成指定目录的项目结构并复制到剪贴板")
+	fmt.Println("  help              显示帮助信息")
+	fmt.Println("Options:")
+	fmt.Println("  -all              包含所有文件")
 }
