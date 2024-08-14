@@ -13,7 +13,7 @@ type Config struct {
 func NewConfig() Config {
 	return Config{
 		Language:     "go",
-		ExcludeFiles: []string{},
+		ExcludeFiles: []string{"aigo.yaml", "AigoTemplate.md"},
 		IncludeFiles: []string{},
 	}
 }
@@ -39,7 +39,7 @@ func (c *Config) ShouldInclude(path string) bool {
 }
 
 var defaultExcludeRules = map[string][]string{
-	"go":     {"AigoTemplate.md", "aigo.yaml"},
+	"go":     {"aigo.yaml", "AigoTemplate.md"},
 	"python": {"__pycache__", "*.pyc"},
 	// 添加其他语言的默认规则
 }

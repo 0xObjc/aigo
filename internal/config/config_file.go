@@ -40,7 +40,7 @@ func CreateConfigFile(dir string, language string) error {
 		return fmt.Errorf("config file already exists")
 	}
 
-	excludeFiles := GetDefaultExcludeRules(language)
+	excludeFiles := append(GetDefaultExcludeRules(language), "aigo.yaml", "AigoTemplate.md")
 
 	cfg := ConfigFile{
 		Language:     language,
