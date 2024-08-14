@@ -2,12 +2,11 @@ package renderer
 
 import (
 	"bytes"
-	"github.com/0xObjc/aigo/internal/model"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"text/template"
 
+	"github.com/0xObjc/aigo/internal/model"
 	"github.com/atotto/clipboard"
 )
 
@@ -20,16 +19,14 @@ func RenderTemplate(dir string, data TemplateData) error {
 	var templateBytes []byte
 	var err error
 
-	// 检查是否存在自定义模板文件
 	templatePath := filepath.Join(dir, "AigoTemplate.md")
 	if _, err := os.Stat(templatePath); err == nil {
-		templateBytes, err = ioutil.ReadFile(templatePath)
+		templateBytes, err = os.ReadFile(templatePath)
 		if err != nil {
 			return err
 		}
 	} else {
-		// 使用默认模板文件
-		templateBytes, err = ioutil.ReadFile("template.md")
+		templateBytes, err = os.ReadFile("template.md")
 		if err != nil {
 			return err
 		}

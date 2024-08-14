@@ -1,21 +1,39 @@
 package config
 
+import (
+	"path/filepath"
+)
+
 type Config struct {
-	IncludeAllFiles bool
-	Language        string
-	ExcludeFiles    []string
-	IncludeFiles    []string
+	Language     string
+	ExcludeFiles []string
+	IncludeFiles []string
 }
 
-func NewConfig(args []string) Config {
-	includeAllFiles := false
-	if len(args) == 3 && args[2] == "-all" {
-		includeAllFiles = true
-	}
+func NewConfig() Config {
 	return Config{
-		IncludeAllFiles: includeAllFiles,
-		Language:        "go",
-		ExcludeFiles:    []string{},
-		IncludeFiles:    []string{},
+		Language:     "go",
+		ExcludeFiles: []string{},
+		IncludeFiles: []string{},
 	}
+}
+
+func (c *Config) ShouldExclude(path string) bool {
+	for _, pattern := range c.ExcludeFiles {
+		matched, err := filepath.Match(pattern, path)
+		if err == nil && matched {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Config) ShouldInclude(path string) bool {
+	for _, pattern := range c.IncludeFiles {
+		matched, err := filepath.Match(pattern, path)
+		if err == nil && matched {
+			return true
+		}
+	}
+	return false
 }

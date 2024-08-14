@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -21,7 +20,7 @@ func LoadConfigFile(dir string) (*ConfigFile, error) {
 		return nil, nil
 	}
 
-	content, err := ioutil.ReadFile(configFilePath)
+	content, err := os.ReadFile(configFilePath)
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +51,6 @@ func CreateConfigFile(dir string) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(configFilePath, data, 0644)
+	err = os.WriteFile(configFilePath, data, 0644)
 	return err
 }

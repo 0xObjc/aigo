@@ -2,7 +2,6 @@ package generator
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -14,9 +13,8 @@ import (
 func GenerateProjectStructure(dir string, cfg config.Config) (string, error) {
 	var buf bytes.Buffer
 
-	// Read go.mod to get project name
 	goModPath := filepath.Join(dir, "go.mod")
-	content, err := ioutil.ReadFile(goModPath)
+	content, err := os.ReadFile(goModPath)
 	if err != nil {
 		return "", err
 	}
@@ -38,22 +36,21 @@ func extractProjectName(goModContent string) string {
 }
 
 func generateProjectStructure(dir string, buf *bytes.Buffer, prefix string, cfg config.Config) error {
-	entries, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return err
 	}
 
-	// Sort entries to ensure directories come first
 	sort.Slice(entries, func(i, j int) bool {
 		return entries[i].IsDir() && !entries[j].IsDir()
 	})
 
-	var filteredEntries []os.FileInfo
+	var filteredEntries []os.DirEntry
 	for _, entry := range entries {
 		if strings.HasPrefix(entry.Name(), ".") {
 			continue
 		}
-		if cfg.IncludeAllFiles || entry.IsDir() || strings.HasSuffix(entry.Name(), ".go") || strings.HasSuffix(entry.Name(), "go.mod") {
+		if cfg.ShouldInclude(entry.Name()) || true {
 			filteredEntries = append(filteredEntries, entry)
 		}
 	}
