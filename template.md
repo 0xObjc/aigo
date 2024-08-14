@@ -11,7 +11,7 @@
 {{range .Files}}
 ### {{.Name}}
 
-```go
+```{{.Language}}
 {{.Content}}
 ```
 {{end}}

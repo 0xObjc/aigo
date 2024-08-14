@@ -2,9 +2,9 @@ package app
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/0xObjc/aigo/internal/config"
+	lang "github.com/0xObjc/aigo/internal/language"
+	"os"
 )
 
 func CreateNewProject(args []string) {
@@ -18,7 +18,20 @@ func CreateNewProject(args []string) {
 		return
 	}
 
-	err := config.CreateConfigFile(dir)
+	var projectLanguage string
+	for _, detector := range lang.Detectors() {
+		projectLanguage = detector.DetectLanguage(dir)
+		if projectLanguage != "unknown" {
+			break
+		}
+	}
+
+	if projectLanguage == "unknown" {
+		fmt.Println("Unable to detect project language. Using default language: go")
+		projectLanguage = "go"
+	}
+
+	err := config.CreateConfigFile(dir, projectLanguage)
 	if err != nil {
 		fmt.Println("Error creating config file:", err)
 	} else {

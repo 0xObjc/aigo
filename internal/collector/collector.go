@@ -11,8 +11,8 @@ import (
 	"github.com/0xObjc/aigo/internal/config"
 )
 
-func CollectFiles(dir string, cfg config.Config) ([]model.File, error) {
-	var files []model.File
+func CollectFiles(dir string, cfg config.Config) ([]model.FileWithLanguage, error) {
+	var files []model.FileWithLanguage
 
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -44,9 +44,12 @@ func CollectFiles(dir string, cfg config.Config) ([]model.File, error) {
 				return err
 			}
 
-			files = append(files, model.File{
-				Name:    relPath,
-				Content: string(content),
+			language := getFileLanguage(relPath) // 获取文件语言
+
+			files = append(files, model.FileWithLanguage{
+				Name:     relPath,
+				Content:  string(content),
+				Language: language,
 			})
 		}
 
@@ -54,4 +57,19 @@ func CollectFiles(dir string, cfg config.Config) ([]model.File, error) {
 	})
 
 	return files, err
+}
+
+func getFileLanguage(path string) string {
+	ext := filepath.Ext(path)
+	switch ext {
+	case ".go":
+		return "go"
+	case ".java":
+		return "java"
+	case ".py":
+		return "python"
+	// 添加其他语言的扩展名和对应的语言
+	default:
+		return ""
+	}
 }

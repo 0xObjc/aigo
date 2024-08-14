@@ -1,0 +1,41 @@
+package language
+
+var ProjectFiles = map[string]string{
+	"go.mod":           "Go",
+	"requirements.txt": "Python",
+	"pom.xml":          "Java",
+	"CMakeLists.txt":   "C++",
+	"package.json":     "JavaScript",
+	"Gemfile":          "Ruby",
+	"composer.json":    "PHP",
+	"*.csproj":         "C#",
+	"*.xcodeproj":      "Swift",
+	"build.gradle":     "Groovy", // 默认假设为 Groovy
+	"build.gradle.kts": "Kotlin", // Kotlin DSL 的 Gradle 文件
+	"Cargo.toml":       "Rust",
+	"build.sbt":        "Scala",
+	"*.cabal":          "Haskell",
+	"project.clj":      "Clojure",
+	"rebar.config":     "Erlang",
+	"mix.exs":          "Elixir",
+	"elm.json":         "Elm",
+	"pubspec.yaml":     "Dart",
+	"Makefile":         "Makefile",
+	"*.pl":             "Perl",
+	"*.lua":            "Lua",
+	"DESCRIPTION":      "R",
+	"*.m":              "MATLAB",
+	"*.groovy":         "Groovy",
+	"*.f90":            "Fortran",
+	"*.vb":             "Visual Basic",
+	"*.asm":            "Assembly",
+	"schema.sql":       "SQL",
+	"index.html":       "HTML",
+	"styles.css":       "CSS",
+	"*.xml":            "XML",
+	"*.json":           "JSON",
+	"*.yaml":           "YAML",
+	"*.toml":           "TOML",
+	"README.md":        "Markdown",
+	// 添加其他语言的项目文件和对应的语言
+}
