@@ -2,6 +2,7 @@ package config
 
 import (
 	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -35,9 +36,17 @@ func (c *Config) ShouldExclude(path string) bool {
 	}
 
 	for _, pattern := range c.ExcludeFiles {
-		matched, err := filepath.Match(pattern, path)
+		matched, err := filepath.Match(pattern, filepath.Base(path))
 		if err == nil && matched {
 			return true
+		}
+
+		// 处理目录路径的匹配
+		if strings.HasSuffix(pattern, "/") {
+			matched, err = filepath.Match(pattern+"*", path)
+			if err == nil && matched {
+				return true
+			}
 		}
 	}
 	return false
