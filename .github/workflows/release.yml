@@ -1,59 +1,42 @@
-name: Publish to GitHub Releases
+name: Release
 
 on:
   push:
     tags:
-      - 'v*.*.*'  # 匹配版本标签，例如 v1.0.0
+      - 'v*.*.*'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v2
         with:
-          go-version: 1.20  # 使用稳定的 Go 版本
+          go-version: 1.20
 
-      - name: Build for Linux
-        run: GOOS=linux GOARCH=amd64 go build -o aigo-linux-amd64 ./cmd
+      - name: Build binary
+        run: go build -o aigo ./cmd/main.go
 
-      - name: Build for macOS
-        run: GOOS=darwin GOARCH=amd64 go build -o aigo-darwin-amd64 ./cmd
-
-      - name: Build for Windows
-        run: GOOS=windows GOARCH=amd64 go build -o aigo-windows-amd64.exe ./cmd
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Package Assets
+      - name: Package binary and template
         run: |
-          mkdir release
-          mv aigo-linux-amd64 release/
-          mv aigo-darwin-amd64 release/
-          mv aigo-windows-amd64.exe release/
+          mkdir -p release
           cp template.md release/
-          tar -czvf release.tar.gz release
+          cp aigo release/
+          zip -r release_${{ matrix.os }}.zip release
 
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release.tar.gz
-          asset_name: release.tar.gz
-          asset_content_type: application/gzip
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./release_${{ matrix.os }}.zip
+          asset_name: release_${{ matrix.os }}.zip
+          asset_content_type: application/zip
