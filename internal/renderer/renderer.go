@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"text/template"
 )
 
@@ -27,7 +26,7 @@ func RenderTemplate(dir string, data TemplateData) (string, int, error) {
 			return "", 0, err
 		}
 	} else {
-		templateBytes, err = defaultTemplate.ReadFile("AigoTemplate.md")
+		templateBytes, err = os.ReadFile("template.md")
 		if err != nil {
 			return "", 0, err
 		}
@@ -45,7 +44,6 @@ func RenderTemplate(dir string, data TemplateData) (string, int, error) {
 	}
 
 	renderedContent := result.String()
-	renderedContent = strings.ReplaceAll(renderedContent, "\x00", "") // 移除 NUL 字符
 	tokenCount := estimateTokenCount(renderedContent)
 
 	err = clipboard.WriteAll(renderedContent)
