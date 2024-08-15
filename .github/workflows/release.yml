@@ -1,0 +1,59 @@
+name: Publish to GitHub Releases
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # 匹配版本标签，例如 v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.20
+
+    - name: Build for Linux
+      run: GOOS=linux GOARCH=amd64 go build -o aigo-linux-amd64
+
+    - name: Build for macOS
+      run: GOOS=darwin GOARCH=amd64 go build -o aigo-darwin-amd64
+
+    - name: Build for Windows
+      run: GOOS=windows GOARCH=amd64 go build -o aigo-windows-amd64.exe
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Package Assets
+      run: |
+        mkdir release
+        mv aigo-linux-amd64 release/
+        mv aigo-darwin-amd64 release/
+        mv aigo-windows-amd64.exe release/
+        cp template.md release/
+        tar -czvf release.tar.gz release
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./release.tar.gz
+        asset_name: release.tar.gz
+        asset_content_type: application/gzip
