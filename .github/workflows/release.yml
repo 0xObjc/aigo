@@ -1,4 +1,4 @@
-name: GoFrame Release
+name: release
 
 on:
   push:
@@ -9,6 +9,9 @@ on:
 env:
   TZ: Asia/Shanghai
 
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   build:
