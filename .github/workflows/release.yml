@@ -1,42 +1,26 @@
-name: Release
+name: build-go-binary
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [ created ] # 表示在创建新的 Release 时触发
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  build-go-binary:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-
+        goos: [ linux, windows, darwin ] # 需要打包的系统
+        goarch: [ amd64, arm64 ] # 需要打包的架构
+        exclude: # 排除某些平台和架构
+          - goarch: arm64
+            goos: windows
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: wangyoucao577/go-release-action@v1.51
         with:
-          go-version: 1.22.0
-
-      - name: Build binary
-        run: go build -o aigo ./cmd/main.go
-
-      - name: Package binary and template
-        run: |
-          mkdir -p release
-          cp template.md release/
-          cp aigo release/
-          zip -r release_${{ matrix.os }}.zip release
-
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./release_${{ matrix.os }}.zip
-          asset_name: release_${{ matrix.os }}.zip
-          asset_content_type: application/zip
+          github_token: ${{ secrets.GITHUB_TOKEN }} # 一个默认的变量，用来实现往 Release 中添加文件
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: 1.22.0 # 可以指定编译使用的 Golang 版本
+          binary_name: "aigo" # 可以指定二进制文件的名称
+          extra_files: template.md # 需要包含的额外文件
