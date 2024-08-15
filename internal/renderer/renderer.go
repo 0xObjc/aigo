@@ -26,7 +26,7 @@ func RenderTemplate(dir string, data TemplateData) (string, int, error) {
 			return "", 0, err
 		}
 	} else {
-		templateBytes, err = os.ReadFile("template.md")
+		templateBytes, err = defaultTemplate.ReadFile("AigoTemplate.md")
 		if err != nil {
 			return "", 0, err
 		}
