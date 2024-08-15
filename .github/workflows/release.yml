@@ -23,13 +23,8 @@ jobs:
         with:
           go-version: 1.20.8
 
-      - name: Build CLI Binary
-        run: |
-          echo "Building linux amd64 binary..."
-          cd cmd
-          GOOS=linux GOARCH=amd64 go build main.go
-          chmod +x main
-          ./main install -y
+      - name: 拉取gf
+        run: wget -O gf https://github.com/gogf/gf/releases/latest/download/gf_$(go env GOOS)_$(go env GOARCH) && chmod +x gf && ./gf install -y && rm ./gf
 
       - name: Build CLI Binary For All Platform
         run: |
@@ -41,8 +36,8 @@ jobs:
           cd cmd/temp
           for OS in *;do for FILE in $OS/*;\
           do if [[ ${OS} =~ 'windows' ]];\
-          then mv $FILE gf_$OS.exe && rm -rf $OS;\
-          else mv $FILE gf_$OS && rm -rf $OS;\
+          then mv $FILE aigo_$OS.exe && rm -rf $OS;\
+          else mv $FILE aigo_$OS && rm -rf $OS;\
           fi;done;done
 
       - name: Create Github Release
@@ -62,4 +57,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_paths: '["cmd/gf/temp/gf_*"]'
+          asset_paths: '["cmd/temp/aigo_*"]'
