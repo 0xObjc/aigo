@@ -19,13 +19,13 @@ jobs:
           go-version: 1.20  # 使用稳定的 Go 版本
 
       - name: Build for Linux
-        run: GOOS=linux GOARCH=amd64 go build -o aigo-linux-amd64
+        run: GOOS=linux GOARCH=amd64 go build -o aigo-linux-amd64 ./cmd
 
       - name: Build for macOS
-        run: GOOS=darwin GOARCH=amd64 go build -o aigo-darwin-amd64
+        run: GOOS=darwin GOARCH=amd64 go build -o aigo-darwin-amd64 ./cmd
 
       - name: Build for Windows
-        run: GOOS=windows GOARCH=amd64 go build -o aigo-windows-amd64.exe
+        run: GOOS=windows GOARCH=amd64 go build -o aigo-windows-amd64.exe ./cmd
 
       - name: Create Release
         id: create_release
